@@ -1,0 +1,103 @@
+{% extends 'back/base.html' %}
+
+{% block title %}栏目 - 异清轩博客管理系统{% endblock %}
+
+{% block index %}
+
+
+  <div class="row">
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-lg-10 col-md-offset-2 main" id="main">
+      <div class="row">
+        <div class="col-md-5">
+          <h1 class="page-header">添加</h1>
+          <form action="" method="post" autocomplete="off">
+            <div class="form-group">
+              <label for="category-name">栏目名称</label>
+              <input type="text" id="category-name" name="name" class="form-control" placeholder="在此处输入栏目名称" required autocomplete="off">
+              <span class="prompt-text">这将是它在站点上显示的名字。</span> </div>
+
+            <div class="form-group">
+              <label for="category-fname">父节点</label>
+              <select id="category-fname" class="form-control" name="fid">
+                <option value="" name="wu" selected>无</option>
+                {% for cate in cates %}
+                <option value="{{ forloop.counter }}">{{ cate.c_name }}</option>
+                {% endfor %}
+
+              </select>
+              <span class="prompt-text">栏目是有层级关系的，您可以有一个“音乐”分类目录，在这个目录下可以有叫做“流行”和“古典”的子目录。</span> </div>
+
+            <button class="btn btn-primary" type="submit" name="submit">添加新栏目</button>
+          </form>
+        </div>
+        <div class="col-md-7">
+          <h1 class="page-header">管理 <span class="badge">{{ len_cates }}</span></h1>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th><span class="glyphicon glyphicon-paperclip"></span> <span class="visible-lg">ID</span></th>
+                  <th><span class="glyphicon glyphicon-file"></span> <span class="visible-lg">名称</span></th>
+
+                  <th><span class="glyphicon glyphicon-pushpin"></span> <span class="visible-lg">总数</span></th>
+                  <th><span class="glyphicon glyphicon-pencil"></span> <span class="visible-lg">操作</span></th>
+                </tr>
+              </thead>
+              <tbody>
+
+                {% for cate in cates %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ cate.c_name }}</td>
+
+                  <td>125</td>
+                  <td><a href="{% url 'user:update_cate' %}?id={{ cate.id }}">修改</a> <a rel="{{ cate.id }}">删除</a></td>
+                </tr>
+
+                {% endfor %}
+
+              </tbody>
+            </table>
+            <span class="prompt-text"><strong>注：</strong>删除一个栏目也会删除栏目下的文章和子栏目,请谨慎删除!</span> </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}
+
+{% block js2 %}
+<script src="/static/staticback/js/bootstrap.min.js"></script>
+<script src="/static/staticback/js/admin-scripts.js"></script>
+<script>
+//是否确认删除
+$(function(){   
+	$("#main table tbody tr td a").click(function(){
+		var name = $(this);
+		var id = name.attr("rel"); //对应id  
+		if (event.srcElement.outerText === "删除") 
+		{
+			if(window.confirm("此操作不可逆，是否确认？"))
+			{
+				$.ajax({
+					url: "/user/del_cate/",
+					type:"POST",
+					data:{
+					'id':id,
+					},
+					success:function (data) {
+                        window.location.href='/user/category/'
+					},
+					error:function (){
+
+					}
+				});
+			};
+		};
+	});   
+});
+</script>
+
+
+{% endblock %}
